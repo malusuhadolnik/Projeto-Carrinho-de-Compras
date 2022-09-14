@@ -64,12 +64,19 @@ const createProductItemElement = ({ id, title, thumbnail }) => {
   
   return section;
 };
+// requisito 5
+const cartItemClickListener = (event) => {
+  const alvo = event.target;
+  const place = document.querySelector('.cart__items');
+  place.removeChild(alvo);
+};
 
+// func já veio pronta
 const createCartItemElement = ({ id, title, price }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
-  // li.addEventListener('click', cartItemClickListener);
+  li.addEventListener('click', cartItemClickListener);
   return li;
 };
 
@@ -89,7 +96,7 @@ const addProducts = async () => {
  getJson.results.forEach((element) => { 
   const { id, title, thumbnail } = element;// desestruturando o objeto getJason
   product = createProductItemElement({ id, title, thumbnail });
-  product.querySelector('.item__add').addEventListener('click', funcAddToCart); // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Então o escutador deve ser add aqui, ou na função addProducts, que chama a presente função.
+  product.querySelector('.item__add').addEventListener('click', funcAddToCart); // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
   placement.appendChild(product);
   });
 };
