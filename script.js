@@ -70,8 +70,7 @@ const cartItemClickListener = (event) => {
   const place = document.querySelector('.cart__items');
   place.removeChild(alvo);
 };
-
-// func já veio pronta
+//
 const createCartItemElement = ({ id, title, price }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
