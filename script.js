@@ -43,7 +43,7 @@ const createCustomElement = (element, className, innerText) => {
  * @param {Element} product - Elemento do produto.
  * @returns {string} ID do produto.
  */
- const getIdFromProductItem = (product) => product.querySelector('span.item_id').innerText;
+ // const getIdFromProductItem = (product) => product.querySelector('span.item_id').innerText;
 
 /**
  * Função responsável por criar e retornar um item do carrinho.
@@ -53,6 +53,17 @@ const createCustomElement = (element, className, innerText) => {
  * @param {string} product.price - Preço do produto.
  * @returns {Element} Elemento de um item do carrinho.
  */
+const createProductItemElement = ({ id, title, thumbnail }) => {
+  const section = document.createElement('section');
+  section.className = 'item';
+
+  section.appendChild(createCustomElement('span', 'item_id', id));
+  section.appendChild(createCustomElement('span', 'item__title', title));
+  section.appendChild(createProductImageElement(thumbnail));
+  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
+  
+  return section;
+};
 
 const createCartItemElement = ({ id, title, price }) => {
   const li = document.createElement('li');
@@ -62,7 +73,7 @@ const createCartItemElement = ({ id, title, price }) => {
   return li;
 };
 
-// requisito 4 - checar comentário em createProductItemElement
+// requisito 4 
 const funcAddToCart = async (event) => { // 
   const productId = event.target.parentNode.firstChild.innerText;
   const itemJson = await fetchItem(productId);
@@ -71,30 +82,18 @@ const funcAddToCart = async (event) => { //
   place.appendChild(createCartItemElement({ id, title, price }));
 };
 
-// mudei esta função de lugar: funcAddTocart não pode ser chamada em addEventListener antes de declarada
-const createProductItemElement = ({ id, title, thumbnail }) => {
-  const section = document.createElement('section');
-  section.className = 'item';
-
-  section.appendChild(createCustomElement('span', 'item_id', id));
-  section.appendChild(createCustomElement('span', 'item__title', title));
-  section.appendChild(createProductImageElement(thumbnail));
-  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'))
-    .addEventListener('click', funcAddToCart);
-  // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Então o escutador deve ser add aqui, ou na função addProducts, que chama a presente função Não consegui entender como add em add products, então vai aqui mesmo.
-  return section;
-};
-
-// Requisito 2
+// Requisito 2 - refatorada devido ao requisito 4: adicionei a linha do escutador de evebtos
 const addProducts = async () => {
  const getJson = await fetchProducts('computador');
  const placement = document.querySelector('.items');
- return getJson.results.forEach((element) => { 
+ getJson.results.forEach((element) => { 
   const { id, title, thumbnail } = element;// desestruturando o objeto getJason
-  placement.appendChild(createProductItemElement({ id, title, thumbnail }));
-});
+  product = createProductItemElement({ id, title, thumbnail });
+  product.querySelector('.item__add').addEventListener('click', funcAddToCart); // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Então o escutador deve ser add aqui, ou na função addProducts, que chama a presente função.
+  placement.appendChild(product);
+  });
 };
+
 window.onload = () => { 
   addProducts();
-  funcAddToCart();
 };
