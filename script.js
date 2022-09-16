@@ -99,7 +99,7 @@ const addProducts = async () => {
  getJson.results.forEach((element) => { 
   const { id, title, thumbnail } = element;
   product = createProductItemElement({ id, title, thumbnail }); 
-  // product.querySelector('.item__add').addEventListener('click', funcAddToCart); // antes do requisito 8.foi refatorada, checar linha abaixo.
+  // product.querySelector('.item__add').addEventListener('click', funcAddToCart); // linha anterior ao requisito 8.foi refatorada, checar linha abaixo.
   product.querySelector('.item__add').addEventListener('click', async (event) => { // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
     await funcAddToCart(event);
     // requisito 8: resolução inspirada na aula Casa de Câmbio
@@ -109,23 +109,14 @@ const addProducts = async () => {
   place.appendChild(product);
   });
 };
-// Alternativa para adição no local storage (vi na monitoria): quando chamada no window.onload, após addProducts, não printa o console.log
-// const toStorage = () => {
-//   const allBtn = document.querySelectorAll('.item__add');
-//   allBtn.forEach((element) => {
-//     element.addEventListener('click', async (event) => {
-//       const productId = event.target.parentNode.firstChild;
-//       console.log(productId);
-//       const id = productId.innerText;
-//       const itemInfo = await fetchItem(id);
-//       containsCartItems.appendChild(createCartItemElement(itemInfo));
-//       console.log(containsCartItems);
-//       const cartItem = containsCartItems.innerHTML;
-//       saveCartItems(cartItem);
-//       console.log('executa to storage');
-//     });
-//   });
-// }; 
+
+const cleanCart = () => {
+  const emptyBtn = document.querySelector('.empty-cart');
+  emptyBtn.addEventListener('click', () => {
+  containsCartItems.innerHTML = ' ';
+  localStorage.removeItem('cartItems');
+  });
+};
 
 window.onload = () => { 
   addProducts();
@@ -136,9 +127,9 @@ window.onload = () => {
   const allLis = document.querySelectorAll('.cart__item');
   console.log(allLis);
   allLis.forEach((singleLi) => {
-    console.log(singleLi);
     singleLi.addEventListener('click', (element) => {
       element.target.remove();
     });
   });
+  cleanCart();
 };
