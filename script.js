@@ -100,7 +100,7 @@ const addProducts = async () => {
   const { id, title, thumbnail } = element;
   product = createProductItemElement({ id, title, thumbnail }); 
   // product.querySelector('.item__add').addEventListener('click', funcAddToCart); // linha anterior ao requisito 8.foi refatorada, checar linha abaixo.
-  product.querySelector('.item__add').addEventListener('click', async (event) => { // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
+  product.querySelector('.item__add').addEventListener('click', async (event) => { // Para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
     await funcAddToCart(event);
     // requisito 8: resolução inspirada na aula Casa de Câmbio
     const cartItem = containsCartItems.innerHTML;
@@ -110,6 +110,7 @@ const addProducts = async () => {
   });
 };
 
+// Requisito 10
 const cleanCart = () => {
   const emptyBtn = document.querySelector('.empty-cart');
   emptyBtn.addEventListener('click', () => {
@@ -118,9 +119,34 @@ const cleanCart = () => {
   });
 };
 
+// Requisito 11
+const printLoadingMsg = () => {
+  const siteToAdd = document.querySelector('.items');
+    
+  const newLi = document.createElement('li');
+  newLi.className = 'loading';
+
+  const newDiv = document.createElement('div');
+  newDiv.innerHTML = 'carregando...';
+
+  newLi.appendChild(newDiv);
+  siteToAdd.appendChild(newLi);
+};
+
+const removeLoadingMsg = () => {
+  setTimeout(() => {
+  const theMsgParentSite = document.querySelector('.loading');
+  theMsgParentSite.remove();
+  }, 2500);
+};
+
+//
 window.onload = () => { 
+  printLoadingMsg();
+  removeLoadingMsg();
   addProducts();
-  // requisito 8: traz do local storage e pões na tela
+  
+  // requisito 8: traz do local storage e põe na tela
   const getInStorage = getSavedCartItems();
   containsCartItems.innerHTML = getInStorage; 
   // requisito 8: remove do carrinho os itens carregados do local storage. Desenvolvida com ajuda da monitoria
