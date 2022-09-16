@@ -1,6 +1,8 @@
 // Esse tipo de comentário que estão antes de todas as funções são chamados de JSdoc,
 // experimente passar o mouse sobre o nome das funções e verá que elas possuem descrições! 
 
+// const getSavedCartItems = require("./helpers/getSavedCartItems");
+
 // const { fetchProducts } = require("./helpers/fetchProducts");
 
 // Fique a vontade para modificar o código já escrito e criar suas próprias funções!
@@ -64,18 +66,20 @@ const createProductItemElement = ({ id, title, thumbnail }) => {
   
   return section;
 };
-// requisito 5
+
+const containsCartItems = document.querySelector('.cart__items');
+
+// requisito 5 
 const cartItemClickListener = (event) => {
-  const alvo = event.target;
-  const place = document.querySelector('.cart__items');
-  place.removeChild(alvo);
+   containsCartItems.removeChild(event.target);
 };
-//
+
+// veio pronta
 const createCartItemElement = ({ id, title, price }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
-  li.addEventListener('click', cartItemClickListener);
+  li.addEventListener('click', cartItemClickListener); 
   return li;
 };
 
@@ -84,22 +88,57 @@ const funcAddToCart = async (event) => { //
   const productId = event.target.parentNode.firstChild.innerText;
   const itemJson = await fetchItem(productId);
   const { id, title, price } = itemJson;
-  const place = document.querySelector('.cart__items');
-  place.appendChild(createCartItemElement({ id, title, price }));
+  containsCartItems.appendChild(createCartItemElement({ id, title, price }));
 };
 
-// Requisito 2 - refatorada devido ao requisito 4: adicionei a linha do escutador de evebtos
+// Requisito 2 - refatorada devido aos requisitos 4 e 8 (adição de eventListener,funcAddToCart e saveCartItems)
 const addProducts = async () => {
  const getJson = await fetchProducts('computador');
- const placement = document.querySelector('.items');
+ const place = document.querySelector('.items');
+ 
  getJson.results.forEach((element) => { 
-  const { id, title, thumbnail } = element;// desestruturando o objeto getJason
-  product = createProductItemElement({ id, title, thumbnail });
-  product.querySelector('.item__add').addEventListener('click', funcAddToCart); // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
-  placement.appendChild(product);
+  const { id, title, thumbnail } = element;
+  product = createProductItemElement({ id, title, thumbnail }); 
+  // product.querySelector('.item__add').addEventListener('click', funcAddToCart); // antes do requisito 8.foi refatorada, checar linha abaixo.
+  product.querySelector('.item__add').addEventListener('click', async (event) => { // Importante: para pegar o elemento ao qual vamos adicionar o escutador de click, no caso os buttons, estes obviamente já precisam estar criados.Por isso o escutador foi add aqui
+    await funcAddToCart(event);
+    // requisito 8: resolução inspirada na aula Casa de Câmbio
+    const cartItem = containsCartItems.innerHTML;
+    saveCartItems(cartItem);
+    });
+  place.appendChild(product);
   });
 };
+// Alternativa para adição no local storage (vi na monitoria): quando chamada no window.onload, após addProducts, não printa o console.log
+// const toStorage = () => {
+//   const allBtn = document.querySelectorAll('.item__add');
+//   allBtn.forEach((element) => {
+//     element.addEventListener('click', async (event) => {
+//       const productId = event.target.parentNode.firstChild;
+//       console.log(productId);
+//       const id = productId.innerText;
+//       const itemInfo = await fetchItem(id);
+//       containsCartItems.appendChild(createCartItemElement(itemInfo));
+//       console.log(containsCartItems);
+//       const cartItem = containsCartItems.innerHTML;
+//       saveCartItems(cartItem);
+//       console.log('executa to storage');
+//     });
+//   });
+// }; 
 
 window.onload = () => { 
   addProducts();
+  // requisito 8: traz do local storage e pões na tela
+  const getInStorage = getSavedCartItems();
+  containsCartItems.innerHTML = getInStorage; 
+  // requisito 8: remove do carrinho os itens carregados do local storage. Desenvolvida com ajuda da monitoria
+  const allLis = document.querySelectorAll('.cart__item');
+  console.log(allLis);
+  allLis.forEach((singleLi) => {
+    console.log(singleLi);
+    singleLi.addEventListener('click', (element) => {
+      element.target.remove();
+    });
+  });
 };

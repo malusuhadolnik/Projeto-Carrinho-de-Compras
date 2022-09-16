@@ -8,4 +8,3 @@ const saveCartItems = async (cartItem) => {
 if (typeof module !== 'undefined') {
   module.exports = saveCartItems;
 }
-// dúvidas! onde eu chamo esta função?? onde estabeleço o cart item???
