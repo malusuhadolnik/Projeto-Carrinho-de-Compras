@@ -91,6 +91,8 @@ const funcAddToCart = async (event) => { //
   containsCartItems.appendChild(createCartItemElement({ id, title, price }));
 };
 
+// estabelecendo uma variável para pegar o último item de uma array
+
 // Requisito 2 - refatorada devido aos requisitos 4 e 8 (adição de eventListener,funcAddToCart e saveCartItems)
 const addProducts = async () => {
  const getJson = await fetchProducts('computador');
@@ -105,6 +107,9 @@ const addProducts = async () => {
     // requisito 8: resolução inspirada na aula Casa de Câmbio
     const cartItem = containsCartItems.innerHTML;
     saveCartItems(cartItem);
+    const makeArray = containsCartItems.innerHTML.split(' ');
+    const getPrice = (makeArray[makeArray.length - 1]).replace(/\D/g, ''); // atenção, é uma string
+    console.log(lastItem);
     });
   place.appendChild(product);
   });
@@ -151,7 +156,6 @@ window.onload = () => {
   containsCartItems.innerHTML = getInStorage; 
   // requisito 8: remove do carrinho os itens carregados do local storage. Desenvolvida com ajuda da monitoria
   const allLis = document.querySelectorAll('.cart__item');
-  console.log(allLis);
   allLis.forEach((singleLi) => {
     singleLi.addEventListener('click', (element) => {
       element.target.remove();
